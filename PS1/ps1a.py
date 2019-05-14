@@ -112,7 +112,6 @@ def brute_force_cow_transport(cows,limit=10):
     best_option = None
     fewest_trips = len(cows)
     
-    
     for option in trip_options:
         valid = True
         #check to see if individual trips in each option don't exceed weight limit
@@ -123,7 +122,7 @@ def brute_force_cow_transport(cows,limit=10):
                 break
         #compare to best option so far, and replace if fewer number of trips
         if valid:
-            if len(option)<fewest_trips:
+            if len(option)<=fewest_trips:
                 best_option = option
                 fewest_trips = len(option)
                 
@@ -160,5 +159,5 @@ def compare_cow_transport_algorithms():
     print("greedy runtime: ",greedy_time)
     print("brute force runtime: ", brute_force_time)
 
-compare_cow_transport_algorithms()
-
+#compare_cow_transport_algorithms()
+print(brute_force_cow_transport({'Betsy': 65, 'Daisy': 50, 'Buttercup': 72}, 75))
