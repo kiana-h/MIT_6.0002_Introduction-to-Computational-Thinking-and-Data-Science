@@ -89,8 +89,8 @@ class RectangularRoom(object):
         self.dirt_amount = dirt_amount
         self.tiles = {}
         
-        for i in range(width):
-            for j in range(height):
+        for i in range(int(width)):
+            for j in range(int(height)):
                 self.tiles[(i,j)] = dirt_amount
         
         
@@ -136,11 +136,8 @@ class RectangularRoom(object):
         """
         Returns: an integer; the total number of clean tiles in the room
         """
-        clean_tiles = 0
-        for tile, dirt in self.tiles:
-            if dirt == 0:
-                clean_tiles += 1
-        return clean_tiles
+        cleantiles = list(self.tiles.values())
+        return cleantiles.count(0)
             
         
     def is_position_in_room(self, pos):
@@ -483,6 +480,7 @@ def run_simulation(num_robots, speed, capacity, width, height, dirt_amount, min_
     sims = []    
     
     for i in range(num_trials):
+        anim = ps3_visualize.RobotVisualization(num_robots, width, height, False, 0.02)
         #reset time steps, room, and robots for each simulation
         time_steps = 0
         room = EmptyRoom(width, height, dirt_amount)
@@ -494,20 +492,27 @@ def run_simulation(num_robots, speed, capacity, width, height, dirt_amount, min_
         while room.get_num_cleaned_tiles()/room.get_num_tiles() < min_coverage:
             time_steps +=1
             for robot in robots:
-                robot.update_position_and_clean()        
+                robot.update_position_and_clean()  
+                anim.update(room, robots)
         #add the time steps to array 
         sims.append(time_steps)
+        anim.done()
     
     return numpy.mean(sims)
                 
         
-
 
 #print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 5, 5, 3, 1.0, 50 , StandardRobot)))
 #print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 10, 10, 3, 0.8, 50, StandardRobot)))
 #print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 10, 10, 3, 0.9, 50, StandardRobot)))
 #print ('avg time steps: ' + str(run_simulation(1, 1.0, 1, 20, 20, 3, 0.5, 50, StandardRobot)))
 #print ('avg time steps: ' + str(run_simulation(3, 1.0, 1, 20, 20, 3, 0.5, 50, StandardRobot)))
+#    
+#print ('avg time steps for 80% of a 20x20 room: ' + str(run_simulation(1, 1.0, 1, 20, 20, 3, 0.8 , 50 , StandardRobot)))
+#print ('avg time steps for 80% of a 10x30 room: ' + str(run_simulation(1, 1.0, 1, 10, 30, 3, 0.8 , 50 , StandardRobot)))
+#print ('avg time steps for 80% of a 20x15 room: ' + str(run_simulation(1, 1.0, 1, 20, 15, 3, 0.8 , 50 , StandardRobot)))
+#print ('avg time steps for 80% of a 25x12 room: ' + str(run_simulation(1, 1.0, 1, 25, 12, 3, 0.8 , 50 , StandardRobot)))
+#print ('avg time steps for 80% of a 50x6 room: ' + str(run_simulation(1, 1.0, 1, 50, 6, 3, 0.8 , 50 , StandardRobot)))
 
 # === Problem 6
 #
@@ -533,8 +538,8 @@ def show_plot_compare_strategies(title, x_label, y_label):
     times2 = []
     for num_robots in num_robot_range:
         print ("Plotting", num_robots, "robots...")
-        times1.append(run_simulation(num_robots, 1.0, 1, 20, 20, 3, 0.8, 20, StandardRobot))
-        times2.append(run_simulation(num_robots, 1.0, 1, 20, 20, 3, 0.8, 20, FaultyRobot))
+        times1.append(run_simulation(num_robots, 1.0, 1, 20, 20, 3, 0.8, 2, StandardRobot))
+        times2.append(run_simulation(num_robots, 1.0, 1, 20, 20, 3, 0.8, 2, FaultyRobot))
     pylab.plot(num_robot_range, times1)
     pylab.plot(num_robot_range, times2)
     pylab.title(title)
@@ -554,8 +559,8 @@ def show_plot_room_shape(title, x_label, y_label):
         height = 300/width
         print ("Plotting cleaning time for a room of width:", width, "by height:", height)
         aspect_ratios.append(float(width) / height)
-        times1.append(run_simulation(2, 1.0, 1, width, height, 3, 0.8, 200, StandardRobot))
-        times2.append(run_simulation(2, 1.0, 1, width, height, 3, 0.8, 200, FaultyRobot))
+        times1.append(run_simulation(2, 1.0, 1, width, height, 3, 0.8, 2, StandardRobot))
+        times2.append(run_simulation(2, 1.0, 1, width, height, 3, 0.8, 2, FaultyRobot))
     pylab.plot(aspect_ratios, times1)
     pylab.plot(aspect_ratios, times2)
     pylab.title(title)
@@ -565,6 +570,6 @@ def show_plot_room_shape(title, x_label, y_label):
     pylab.show()
 
 
-show_plot_compare_strategies('Time to clean 80% of a 20x20 room, for various numbers of robots','Number of robots','Time / steps')
+#show_plot_compare_strategies('Time to clean 80% of a 20x20 room, for various numbers of robots','Number of robots','Time / steps')
 #show_plot_room_shape('Time to clean 80% of a 300-tile room for various room shapes','Aspect Ratio', 'Time / steps')
 
